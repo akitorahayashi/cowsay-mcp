@@ -1,1 +1,1 @@
-"""Demo package for running the csay tool-calling example."""
+"""Demo package for running the cowsay-mcp tool-calling example."""

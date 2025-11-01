@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import random
 import sys
 
 from cowsay_mcp import run_cowsay
@@ -15,8 +16,6 @@ def main() -> None:
     bundle = load_model("mlx-community/Qwen3-8B-4bit")
 
     # Ask LLM to select a tool
-    import random
-
     themes = ["nature", "technology", "emotions", "adventure", "creativity"]
     random_theme = random.choice(themes)
 
@@ -47,24 +46,14 @@ def main() -> None:
 
     # Parse and validate tool call
     try:
-        # Find the first complete JSON object (LLM might output text before JSON)
+        # Find the start of the JSON object
         start = raw_response.find("{")
         if start == -1:
             raise ValueError("No JSON found")
 
-        brace_count = 0
-        end = start
-        for i, char in enumerate(raw_response[start:], start):
-            if char == "{":
-                brace_count += 1
-            elif char == "}":
-                brace_count -= 1
-                if brace_count == 0:
-                    end = i + 1
-                    break
-
-        json_str = raw_response[start:end]
-        data = json.loads(json_str)
+        # Use the built-in JSON decoder to robustly parse the object from the string.
+        # This correctly handles nested structures and special characters.
+        data, _ = json.JSONDecoder().raw_decode(raw_response[start:])
 
         if data.get("tool") != "cowsay-mcp":
             sys.exit(f"Wrong tool: {data.get('tool')}")
