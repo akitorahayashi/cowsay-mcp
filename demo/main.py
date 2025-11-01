@@ -10,9 +10,37 @@ from cowsay_mcp import run_cowsay
 from cowsay_mcp.server import server
 
 from .llm import chat_once, load_model
-from .prompting import THEMES, build_initial_messages, explain_poem, parse_tool_call
+from .prompting import POEM_ANALYST_PROMPT, THEMES, build_initial_messages
 
 """CLI entrypoint for running the cowsay tool-calling demo."""
+
+
+def parse_tool_call(raw_response: str, expected_tool: str) -> str:
+    """Extract the poem text from the assistant's JSON tool call."""
+
+    start = raw_response.find("{")
+    if start == -1:
+        raise ValueError("No JSON found in LLM response")
+
+    data, _ = json.JSONDecoder().raw_decode(raw_response[start:])
+    if data.get("tool") != expected_tool:
+        raise ValueError(f"Unexpected tool requested: {data.get('tool')}")
+
+    text = data.get("args", {}).get("text", "").strip()
+    if not text:
+        raise ValueError("Tool call did not include text")
+    return text
+
+
+def normalize_explanation(text: str) -> str:
+    """Remove protocol markers and trim whitespace."""
+
+    cleaned = text.strip()
+    for marker in ("SYSTEM:", "USER:", "ASSISTANT:"):
+        idx = cleaned.find(marker)
+        if idx != -1:
+            cleaned = cleaned[:idx].strip()
+    return cleaned
 
 
 def fetch_primary_tool() -> Any:
@@ -50,7 +78,16 @@ def main() -> None:
     print("\nTool executed result:")
     print(result)
 
-    explanation = explain_poem(bundle, poem_text)
+    explanation = normalize_explanation(
+        chat_once(
+            bundle,
+            [
+                {"role": "system", "content": POEM_ANALYST_PROMPT},
+                {"role": "user", "content": poem_text},
+            ],
+            temperature=0.0,
+        )
+    )
     print("\nPoem explanation:")
     print(explanation)
 

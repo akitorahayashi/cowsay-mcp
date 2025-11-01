@@ -4,8 +4,6 @@ import json
 import textwrap
 from typing import Any
 
-from .llm import chat_once
-
 """Helper utilities for prompts, parsing, and explanations in the demo."""
 
 THEMES = ["nature", "technology", "emotions", "adventure", "creativity"]
@@ -90,48 +88,7 @@ def build_initial_messages(theme: str, tool: Any) -> list[dict[str, str]]:
     ]
 
 
-def parse_tool_call(raw_response: str, expected_tool: str) -> str:
-    """Extract the poem text from the assistant's JSON tool call."""
-
-    start = raw_response.find("{")
-    if start == -1:
-        raise ValueError("No JSON found in LLM response")
-
-    data, _ = json.JSONDecoder().raw_decode(raw_response[start:])
-    if data.get("tool") != expected_tool:
-        raise ValueError(f"Unexpected tool requested: {data.get('tool')}")
-
-    text = data.get("args", {}).get("text", "").strip()
-    if not text:
-        raise ValueError("Tool call did not include text")
-    return text
-
-
-def normalize_explanation(text: str) -> str:
-    """Remove protocol markers and trim whitespace."""
-
-    cleaned = text.strip()
-    for marker in ("SYSTEM:", "USER:", "ASSISTANT:"):
-        idx = cleaned.find(marker)
-        if idx != -1:
-            cleaned = cleaned[:idx].strip()
-    return cleaned
-
-
-def explain_poem(bundle: Any, poem_text: str) -> str:
-    """Ask the LLM to provide a short Japanese explanation of the poem."""
-
-    messages = [
-        {"role": "system", "content": POEM_ANALYST_PROMPT},
-        {"role": "user", "content": poem_text},
-    ]
-    response = chat_once(bundle, messages, temperature=0.0)
-    return normalize_explanation(response)
-
-
 __all__ = [
     "THEMES",
     "build_initial_messages",
-    "parse_tool_call",
-    "explain_poem",
 ]
