@@ -39,7 +39,8 @@ def normalize_explanation(text: str) -> str:
     for marker in ("SYSTEM:", "USER:", "ASSISTANT:"):
         idx = cleaned.find(marker)
         if idx != -1:
-            cleaned = cleaned[:idx].strip()
+            cleaned = cleaned[idx + len(marker):].strip()
+            break  # Only process the first marker found
     return cleaned
 
 
