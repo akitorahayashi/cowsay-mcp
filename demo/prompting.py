@@ -53,7 +53,7 @@ def build_system_prompt(tool: Any) -> str:
     args_summary = summarise_parameters(getattr(tool, "parameters", None))
     properties = (getattr(tool, "parameters", {}) or {}).get("properties", {}) or {}
     arg_keys = list(properties.keys())
-    example_args = {name: "..." for name in arg_keys} or {"text": "..."}
+    example_args = {name: "..." for name in arg_keys}
     example_json = json.dumps(
         {"tool": tool.name, "args": example_args}, ensure_ascii=False
     )
