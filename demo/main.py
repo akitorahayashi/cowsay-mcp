@@ -74,6 +74,44 @@ def main() -> None:
     print("\nTool executed result:")
     print(result)
 
+    # Third LLM call for poem explanation
+    explanation_messages = [
+        {
+            "role": "system",
+            "content": (
+                "あなたは詩の解説者です。ユーザが渡す詩を題材に、テーマ・イメージ・感情的な余韻を"
+                "3〜4文の自然な日本語でまとめてください。推論過程や指示は書かず、箇条書きも使わず、"
+                "完成した文章だけを返してください。"
+            ),
+        },
+        {
+            "role": "user",
+            "content": text,
+        },
+    ]
+    explanation_response = chat_once(bundle, explanation_messages, temperature=0.0)
+    cleaned_response = explanation_response.strip()
+    for marker in ("SYSTEM:", "USER:", "ASSISTANT:"):
+        if marker in cleaned_response:
+            cleaned_response = cleaned_response.split(marker)[0].strip()
+    compact = cleaned_response.replace("\n", "")
+    sentences = [s for s in compact.split("。") if s]
+    unique_sentences = []
+    seen_sentences = set()
+    for sentence in sentences:
+        if sentence not in seen_sentences:
+            unique_sentences.append(sentence)
+            seen_sentences.add(sentence)
+    if unique_sentences:
+        trimmed = "。".join(unique_sentences[:4])
+        if compact.endswith("。") or len(unique_sentences[:4]) < len(unique_sentences):
+            cleaned_response = trimmed + "。"
+        else:
+            cleaned_response = trimmed
+
+    print("\nPoem explanation:")
+    print(cleaned_response)
+
 
 if __name__ == "__main__":
     main()
