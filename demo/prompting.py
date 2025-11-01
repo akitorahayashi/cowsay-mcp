@@ -10,9 +10,9 @@ THEMES = ["nature", "technology", "emotions", "adventure", "creativity"]
 
 POEM_ANALYST_PROMPT = textwrap.dedent(
     """
-    あなたは詩の解説者です。ユーザが渡す詩を題材に、テーマ・イメージ・感情的な余韻を3文以内の自然な日本語の文章でまとめてください。
-    完成した文章だけを返してください。
-    ~です、~ますなどの丁寧語を使って解説してください。
+    You are a poem analyst. Based on the poem provided by the user, summarize the theme, imagery, and emotional resonance in 3 sentences or fewer using natural English.
+    Return only the completed explanation.
+    Use descriptive and engaging language.
     """
 ).strip()
 

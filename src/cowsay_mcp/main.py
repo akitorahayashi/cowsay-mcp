@@ -19,6 +19,7 @@ def main() -> None:
 
             if tool_name == "cowsay-mcp":
                 from cowsay_mcp.server import run_cowsay
+
                 result = run_cowsay(args.get("text", ""))
                 response = {"result": result}
                 print(json.dumps(response))

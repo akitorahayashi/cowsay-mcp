@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import json
-import pytest
 from unittest.mock import AsyncMock, MagicMock
 
-from demo.main import parse_tool_call, normalize_explanation, fetch_primary_tool
+import pytest
+
+from demo.main import fetch_primary_tool, parse_tool_call
 
 
 class TestParseToolCall:
@@ -12,7 +12,9 @@ class TestParseToolCall:
 
     def test_parse_valid_tool_call(self):
         """Test parsing a well-formed tool call."""
-        response = 'Here is your poem: {"tool": "cowsay-mcp", "args": {"text": "Hello world"}}'
+        response = (
+            'Here is your poem: {"tool": "cowsay-mcp", "args": {"text": "Hello world"}}'
+        )
         result = parse_tool_call(response, "cowsay-mcp")
         assert result == "Hello world"
 
@@ -24,9 +26,9 @@ class TestParseToolCall:
 
     def test_parse_tool_call_multiline(self):
         """Test parsing multiline JSON."""
-        response = '''Let me create a poem:
+        response = """Let me create a poem:
         {"tool": "cowsay-mcp",
-         "args": {"text": "Multiline\\npoem"}}'''
+         "args": {"text": "Multiline\\npoem"}}"""
         result = parse_tool_call(response, "cowsay-mcp")
         assert result == "Multiline\npoem"
 
@@ -67,51 +69,11 @@ class TestParseToolCall:
             parse_tool_call(response, "cowsay-mcp")
 
 
-class TestNormalizeExplanation:
-    """Test text normalization functionality."""
-
-    def test_normalize_basic_text(self):
-        """Test basic text normalization."""
-        text = "This is a normal explanation."
-        assert normalize_explanation(text) == "This is a normal explanation."
-
-    def test_normalize_with_system_marker(self):
-        """Test removing SYSTEM marker."""
-        text = "SYSTEM: This is the explanation"
-        assert normalize_explanation(text) == "This is the explanation"
-
-    def test_normalize_with_user_marker(self):
-        """Test removing USER marker."""
-        text = "USER: Please explain this"
-        assert normalize_explanation(text) == "Please explain this"
-
-    def test_normalize_with_assistant_marker(self):
-        """Test removing ASSISTANT marker."""
-        text = "ASSISTANT: Here's my analysis"
-        assert normalize_explanation(text) == "Here's my analysis"
-
-    def test_normalize_with_marker_in_middle(self):
-        """Test marker removal when not at start - removes from marker onward."""
-        text = "Some text SYSTEM: and more"
-        assert normalize_explanation(text) == "and more"
-
-    def test_normalize_whitespace_only(self):
-        """Test handling of whitespace-only text."""
-        text = "   \n\t   "
-        assert normalize_explanation(text) == ""
-
-    def test_normalize_multiple_markers(self):
-        """Test handling multiple markers (removes first one)."""
-        text = "SYSTEM: USER: ASSISTANT: Final text"
-        assert normalize_explanation(text) == "USER: ASSISTANT: Final text"
-
-
 class TestFetchPrimaryTool:
     """Test server tool fetching functionality."""
 
     def test_fetch_primary_tool_success(self, monkeypatch):
         """Test successful tool fetching."""
-        from cowsay_mcp.server import server
 
         # Mock the server.get_tools() to return a tool
         mock_tool = MagicMock()
@@ -127,7 +89,6 @@ class TestFetchPrimaryTool:
 
     def test_fetch_primary_tool_empty(self, monkeypatch):
         """Test error when no tools available."""
-        from cowsay_mcp.server import server
 
         mock_server = MagicMock()
         mock_server.get_tools = AsyncMock(return_value={})

@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import json
 from unittest.mock import MagicMock
 
 from demo.prompting import (
-    summarise_tags,
-    summarise_parameters,
-    build_system_prompt,
-    build_initial_messages,
     THEMES,
+    build_initial_messages,
+    build_system_prompt,
+    summarise_parameters,
+    summarise_tags,
 )
 
 
@@ -45,11 +44,13 @@ class TestSummariseParameters:
         schema = {
             "properties": {
                 "text": {"type": "string", "description": "The text to process"},
-                "count": {"type": "integer", "description": "Number of items"}
+                "count": {"type": "integer", "description": "Number of items"},
             }
         }
         result = summarise_parameters(schema)
-        expected = "text (string) - The text to process; count (integer) - Number of items"
+        expected = (
+            "text (string) - The text to process; count (integer) - Number of items"
+        )
         assert result == expected
 
     def test_summarise_parameters_no_properties(self):
@@ -66,10 +67,7 @@ class TestSummariseParameters:
     def test_summarise_parameters_no_description(self):
         """Test summarization when parameters lack descriptions."""
         schema = {
-            "properties": {
-                "text": {"type": "string"},
-                "count": {"type": "integer"}
-            }
+            "properties": {"text": {"type": "string"}, "count": {"type": "integer"}}
         }
         result = summarise_parameters(schema)
         expected = "text (string); count (integer)"
@@ -86,9 +84,7 @@ class TestBuildSystemPrompt:
         mock_tool.description = "Generate ASCII art speech bubbles"
         mock_tool.tags = ["text", "art"]
         mock_tool.parameters = {
-            "properties": {
-                "text": {"type": "string", "description": "The message"}
-            }
+            "properties": {"text": {"type": "string", "description": "The message"}}
         }
 
         result = build_system_prompt(mock_tool)
@@ -149,5 +145,11 @@ class TestConstants:
 
     def test_themes_constant(self):
         """Test that THEMES contains expected values."""
-        expected_themes = ["nature", "technology", "emotions", "adventure", "creativity"]
+        expected_themes = [
+            "nature",
+            "technology",
+            "emotions",
+            "adventure",
+            "creativity",
+        ]
         assert THEMES == expected_themes

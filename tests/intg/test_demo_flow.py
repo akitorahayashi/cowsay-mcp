@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from demo import main as demo_main
 
@@ -36,7 +37,9 @@ def test_demo_main_happy_path(monkeypatch, capsys):
     assert '"args": {"text": "Hello world"}' in stderr_output
 
     # Check that the ASCII art result appears in stdout
-    assert "Hello world" in stdout_output  # The cowsay output should contain the input text
+    assert (
+        "Hello world" in stdout_output
+    )  # The cowsay output should contain the input text
     assert "|" in stdout_output  # cowsay uses | characters around the text
     assert "Tool executed result:" in stdout_output
 
@@ -53,7 +56,7 @@ def test_demo_main_invalid_tool_call(monkeypatch, capsys):
 
     def fake_chat_once(bundle, messages, **kwargs):
         # Return invalid JSON
-        return 'invalid json tool call'
+        return "invalid json tool call"
 
     monkeypatch.setattr("demo.main.load_model", fake_load_model)
     monkeypatch.setattr("demo.main.chat_once", fake_chat_once)
@@ -84,11 +87,10 @@ def test_demo_main_wrong_tool_name(monkeypatch, capsys):
     monkeypatch.setattr("demo.main.random.choice", lambda x: "nature")
 
     # Should exit with error
-    try:
+    with pytest.raises(SystemExit) as exc_info:
         demo_main.main()
-        assert False, "Should have exited with error"
-    except SystemExit as e:
-        assert "Unexpected tool requested" in str(e)
+
+    assert "Unexpected tool requested" in str(exc_info.value)
 
 
 def test_demo_main_mcp_communication_failure(monkeypatch, capsys):
@@ -134,6 +136,32 @@ def test_demo_main_malformed_mcp_response(monkeypatch, capsys):
     # Mock subprocess to return invalid JSON
     mock_proc = MagicMock()
     mock_proc.communicate.return_value = ("invalid json response", "")
+
+    monkeypatch.setattr("demo.main.load_model", fake_load_model)
+    monkeypatch.setattr("demo.main.chat_once", fake_chat_once)
+    monkeypatch.setattr("demo.llm.chat_once", fake_chat_once)
+    monkeypatch.setattr("demo.main.random.choice", lambda x: "nature")
+    monkeypatch.setattr("demo.main.subprocess.Popen", lambda *args, **kwargs: mock_proc)
+
+    with pytest.raises(SystemExit) as exc_info:
+        demo_main.main()
+
+    assert "MCP communication error" in str(exc_info.value)
+
+
+def test_demo_main_mcp_response_missing_result(monkeypatch, capsys):
+    """Test demo handles MCP responses that are valid JSON but missing 'result' key."""
+    dummy_bundle = (object(), object())
+
+    def fake_load_model(model_id):
+        return dummy_bundle
+
+    def fake_chat_once(bundle, messages, **kwargs):
+        return '{"tool": "cowsay-mcp", "args": {"text": "test"}}'
+
+    # Mock subprocess to return valid JSON but without 'result' key
+    mock_proc = MagicMock()
+    mock_proc.communicate.return_value = ('{"error": "some error"}', "")
 
     monkeypatch.setattr("demo.main.load_model", fake_load_model)
     monkeypatch.setattr("demo.main.chat_once", fake_chat_once)

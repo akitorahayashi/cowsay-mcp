@@ -32,18 +32,6 @@ def parse_tool_call(raw_response: str, expected_tool: str) -> str:
     return text
 
 
-def normalize_explanation(text: str) -> str:
-    """Remove protocol markers and trim whitespace."""
-
-    cleaned = text.strip()
-    for marker in ("SYSTEM:", "USER:", "ASSISTANT:"):
-        idx = cleaned.find(marker)
-        if idx != -1:
-            cleaned = cleaned[idx + len(marker):].strip()
-            break  # Only process the first marker found
-    return cleaned
-
-
 def fetch_primary_tool() -> Any:
     """Return the first registered tool from the FastMCP server."""
 
@@ -57,12 +45,12 @@ def fetch_primary_tool() -> Any:
 def main() -> None:
     """LLM selects and executes a tool via MCP."""
 
-    bundle = load_model("mlx-community/Qwen3-8B-4bit")
+    bundle = load_model("mlx-community/Llama-3.2-3B-Instruct-4bit")
     tool_spec = fetch_primary_tool()
 
     theme = random.choice(THEMES)
     messages = build_initial_messages(theme, tool_spec)
-    raw_response = chat_once(bundle, messages, temperature=1.0)
+    raw_response = chat_once(bundle, messages, temperature=0.7)
 
     print(f"LLM raw response: {raw_response!r}", file=sys.stderr)
 
@@ -77,7 +65,7 @@ def main() -> None:
     print("LLM selected tool:", tool_call_json, file=sys.stderr)
 
     proc = subprocess.Popen(
-        ["python", "-m", "cowsay_mcp.main"],
+        ["uv", "run", "python", "-m", "cowsay_mcp.main"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -97,22 +85,20 @@ def main() -> None:
         result = response_data.get("result")
         if not result:
             raise ValueError(f"MCP response missing 'result': {stdout_data}")
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, ValueError):
         print(f"Failed to parse MCP response: {stdout_data!r}", file=sys.stderr)
         sys.exit("MCP communication error")
 
     print("\nTool executed result:")
     print(result)
 
-    explanation = normalize_explanation(
-        chat_once(
-            bundle,
-            [
-                {"role": "system", "content": POEM_ANALYST_PROMPT},
-                {"role": "user", "content": poem_text},
-            ],
-            temperature=0.0,
-        )
+    explanation = chat_once(
+        bundle,
+        [
+            {"role": "system", "content": POEM_ANALYST_PROMPT},
+            {"role": "user", "content": poem_text},
+        ],
+        temperature=0.3,
     )
     print("\nPoem explanation:")
     print(explanation)
