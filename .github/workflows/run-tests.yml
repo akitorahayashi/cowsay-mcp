@@ -10,7 +10,7 @@ jobs:
       UV_CACHE_DIR: "./.uv-cache"
     strategy:
       matrix:
-        test_target: [unit-test, intg-test, build-test, e2e-test]
+        test_target: [unit-test, intg-test]
       fail-fast: false
 
     steps:

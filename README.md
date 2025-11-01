@@ -2,7 +2,8 @@
 
 ## Overview
 - Demonstrates how a local MLX model can perform tool-calling by coordinating with a FastMCP server that wraps the Python `cowsay` library.
-- Provides a single `cowsay-mcp` tool implemented as an MCP server plus a demo script that walks through the two-turn tool-calling loop.
+- Provides a single `cowsay-mcp` tool that generates fun ASCII art speech bubbles with cows, complete with detailed descriptions and usage guidance for LLMs.
+- The tool includes comprehensive metadata (description, tags, examples) to help LLMs understand when and how to use it effectively.
 
 ## Requirements
 - Python 3.12 or newer.

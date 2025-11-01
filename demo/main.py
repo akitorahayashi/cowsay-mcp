@@ -15,23 +15,37 @@ def main() -> None:
     bundle = load_model("mlx-community/Qwen3-8B-4bit")
 
     # Ask LLM to select a tool
+    import time
+    import random
+    
+    themes = ["nature", "technology", "emotions", "adventure", "creativity"]
+    random_theme = random.choice(themes)
+    timestamp = int(time.time())
+    
     messages = (
         {
             "role": "system",
             "content": (
-                "You are an AI assistant that can use tools.\n"
-                "Available tool: cowsay-mcp - displays text in ASCII art\n"
+                "You are an AI assistant that can use tools to enhance your responses.\n"
+                "Available tool: cowsay-mcp - Generate fun ASCII art speech bubbles with a cow\n"
                 "Tool format: {'tool': 'cowsay-mcp', 'args': {'text': 'your message'}}\n\n"
+                "Use this tool when:\n"
+                "- You want to make a message more fun and engaging\n"
+                "- The user asks for ASCII art or visual elements\n"
+                "- You want to add humor or personality to your response\n"
+                "- The message would benefit from visual presentation\n\n"
                 "IMPORTANT: Respond ONLY with a JSON object in the exact format above.\n"
                 "Do not write explanations or any other text. Just JSON."
             ),
         },
         {
             "role": "user",
-            "content": "Write a short poem, add an appropriate emoji at the beginning, and display it using cowsay-mcp.",
+            "content": f"Write exactly one short poem about {random_theme} in Japanese, add an appropriate emoji at the beginning, and display it using cowsay-mcp. Timestamp: {timestamp}",
         },
     )
-    raw_response = chat_once(bundle, messages)
+    raw_response = chat_once(bundle, messages, temperature=1.0)
+
+    print(f"LLM raw response: {raw_response!r}", file=sys.stderr)
 
     # Parse and validate tool call
     try:
