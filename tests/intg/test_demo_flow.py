@@ -15,6 +15,7 @@ def test_demo_main_happy_path(monkeypatch, capsys):
 
     monkeypatch.setattr("demo.main.load_model", fake_load_model)
     monkeypatch.setattr("demo.main.chat_once", fake_chat_once)
+    monkeypatch.setattr("demo.llm.chat_once", fake_chat_once)
 
     demo_main.main()
 

@@ -38,12 +38,3 @@ server.tool(
     description="Generate fun ASCII art speech bubbles with a cow. Use this tool when you want to make messages more engaging and humorous by displaying them as if a cow is speaking.",
     tags={"text", "art", "fun", "ascii"},
 )(run_cowsay)
-
-
-def main() -> None:
-    """Start the FastMCP server."""
-    server.run()
-
-
-if __name__ == "__main__":
-    main()
