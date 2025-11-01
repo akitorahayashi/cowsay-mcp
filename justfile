@@ -50,7 +50,7 @@ intg-test:
 
 # Run the MLX demo (requires `uv sync --group demo`)
 demo:
-    @echo "🧪 Running demo with MLX model (ensure demo dependencies are synced)..."
+    @echo "🧪 Running demo..."
     @uv run --group demo python -m demo.main
 
 # ==============================================================================

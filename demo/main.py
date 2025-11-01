@@ -15,13 +15,11 @@ def main() -> None:
     bundle = load_model("mlx-community/Qwen3-8B-4bit")
 
     # Ask LLM to select a tool
-    import time
     import random
-    
+
     themes = ["nature", "technology", "emotions", "adventure", "creativity"]
     random_theme = random.choice(themes)
-    timestamp = int(time.time())
-    
+
     messages = (
         {
             "role": "system",
@@ -40,7 +38,7 @@ def main() -> None:
         },
         {
             "role": "user",
-            "content": f"Write exactly one short poem about {random_theme} in Japanese, add an appropriate emoji at the beginning, and display it using cowsay-mcp. Timestamp: {timestamp}",
+            "content": f"Write exactly one short poem about {random_theme}, add an appropriate emoji at the beginning, and display it using cowsay-mcp.",
         },
     )
     raw_response = chat_once(bundle, messages, temperature=1.0)
