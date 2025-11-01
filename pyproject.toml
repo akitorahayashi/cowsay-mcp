@@ -1,9 +1,10 @@
 [project]
-name = "csay"
+name = "cowsay-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "FastMCP cowsay tool server"
 readme = "README.md"
-requires-python = ">=3.12,<4.0"
+authors = [{ name = "akitorahayashi" }]
+requires-python = ">=3.12"
 dependencies = [
     "fastmcp>=0.1.0",
     "httpx>=0.27.0",
@@ -26,7 +27,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/csay", "demo"]
+packages = ["src/cowsay_mcp", "demo"]
 
 [tool.pytest.ini_options]
 python_files = "test_*.py"

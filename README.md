@@ -1,8 +1,8 @@
-# csay
+# cowsay-mcp
 
 ## Overview
 - Demonstrates how a local MLX model can perform tool-calling by coordinating with a FastMCP server that wraps the Python `cowsay` library.
-- Provides a single `csay` tool implemented as an MCP server plus a demo script that walks through the two-turn tool-calling loop.
+- Provides a single `cowsay-mcp` tool implemented as an MCP server plus a demo script that walks through the two-turn tool-calling loop.
 
 ## Requirements
 - Python 3.12 or newer.
@@ -13,12 +13,12 @@
 - `uv sync` to install the core project dependencies.
 - `uv sync --group dev` if you want local linting/formatting helpers.
 - `uv sync --group demo` before running the MLX demo so that `mlx-lm` is available.
-- Optional: `uv run csay-server` (or `python -m csay.server`) to launch the FastMCP server manually for inspection.
+- Optional: `uv run cowsay-mcp-server` (or `python -m cowsay_mcp.server`) to launch the FastMCP server manually for inspection.
 
 ## Demo Run
 - Execute `uv run --group demo python -m demo.main`.
 - The script will:
-	- prompt the model to request the `csay` tool via strict JSON,
+	- prompt the model to request the `cowsay-mcp` tool via strict JSON,
 	- render the ASCII-art response via the bundled Python `cowsay` dependency,
 	- send the tool call and output back to the model, requesting a final Japanese response.
 - Expect to see the raw JSON tool call printed first, followed by the model's final answer.

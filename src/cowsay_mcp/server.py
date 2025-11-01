@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-"""This MCP server exposes a single tool `csay` backed by the Python `cowsay` package so that local LLMs can request ASCII-art speech bubbles."""
-
 from typing import Final
 
 import cowsay
 from fastmcp import FastMCP
 
-SERVER_NAME: Final[str] = "csay"
+"""This MCP server exposes a single tool `cowsay-mcp` backed by the Python `cowsay` package so that local LLMs can request ASCII-art speech bubbles."""
+
+
+SERVER_NAME: Final[str] = "cowsay-mcp"
+
+
 server = FastMCP(SERVER_NAME)
 
 
@@ -19,12 +22,7 @@ def run_cowsay(text: str) -> str:
         return f"cowsay error: {exc}"
 
 
-def csay_action(text: str) -> str:
-    """Expose the cowsay helper as a plain callable for reuse and testing."""
-    return run_cowsay(text)
-
-
-server.tool(name="csay")(csay_action)
+server.tool(name="cowsay-mcp")(run_cowsay)
 
 
 def main() -> None:

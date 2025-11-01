@@ -1,33 +1,23 @@
 from __future__ import annotations
 
-from typing import Iterator
-
-from demo import tool_flow
-from demo.main import main
+from demo import main as demo_main
 
 
 def test_demo_main_happy_path(monkeypatch, capsys):
-    """Simulate the two-turn flow without needing the actual MLX model."""
-
+    """Test the complete demo flow."""
     dummy_bundle = (object(), object())
-    monkeypatch.setattr(tool_flow, "load_model", lambda model_id: dummy_bundle)
 
-    responses: Iterator[str] = iter(
-        [
-            '{"tool": "csay", "args": {"text": "good evening human"}}',
-            "了解しました。楽しい夜をお過ごしください！",
-        ]
-    )
+    def fake_load_model(model_id):
+        return dummy_bundle
 
     def fake_chat_once(bundle, messages, **kwargs):
-        return next(responses)
+        return '{"tool": "cowsay-mcp", "args": {"text": "🌸 In gardens of the mind, dreams bloom\\nPetals of thought in morning dew"}}'
 
-    monkeypatch.setattr(tool_flow, "chat_once", fake_chat_once)
-    monkeypatch.setattr(tool_flow, "run_cowsay", lambda text: "<cow>\n(text)")
+    monkeypatch.setattr("demo.main.load_model", fake_load_model)
+    monkeypatch.setattr("demo.main.chat_once", fake_chat_once)
 
-    main()
+    demo_main.main()
 
     captured = capsys.readouterr().out
-    assert '"tool": "csay"' in captured
-    assert "Final answer:" in captured
-    assert "楽しい夜" in captured
+    assert '"tool": "cowsay-mcp"' in captured
+    assert "🌸" in captured

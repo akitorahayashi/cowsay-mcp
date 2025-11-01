@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-"""Helpers for interacting with MLX local models framed as chat assistants."""
-
 from typing import Literal, Protocol, Sequence, Tuple, TypedDict
+
+"""Helpers for interacting with MLX local models framed as chat assistants."""
 
 ModelBundle = Tuple[object, object]
 
