@@ -13,11 +13,11 @@
 ## Setup
 - `uv sync` to install the core project dependencies.
 - `uv sync --group dev` if you want local linting/formatting helpers.
-- `uv sync --group demo` before running the MLX demo so that `mlx-lm` is available.
+- `uv sync --extra demo` before running the MLX demo so that `mlx-lm` is available.
 - Optional: `uv run cowsay-mcp-server` (or `python -m cowsay_mcp.server`) to launch the FastMCP server manually for inspection.
 
 ## Demo Run
-- Execute `uv run --group demo python -m demo.main`.
+- Execute `uv run --extra demo python -m demo.main`.
 - The script will:
 	- prompt the model to request the `cowsay-mcp` tool via strict JSON,
 	- render the ASCII-art response via the bundled Python `cowsay` dependency,

@@ -51,7 +51,7 @@ intg-test:
 # Run the MLX demo (requires `uv sync --group demo`)
 demo:
     @echo "🧪 Running demo..."
-    @uv run --group demo python -m demo.main
+    @uv run --extra demo python -m demo.main
 
 # ==============================================================================
 # CLEANUP
