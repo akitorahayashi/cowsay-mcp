@@ -35,8 +35,8 @@ lint:
 
 # Run complete test suite
 test:
-  @just unit-test
-  @just intg-test
+    @just unit-test
+    @just intg-test
 
 # Run unit tests
 unit-test:
@@ -47,6 +47,11 @@ unit-test:
 intg-test:
     @echo "🚀 Running integration tests..."
     @uv run pytest tests/intg
+
+# Run the MLX demo (requires `uv sync --group demo`)
+demo:
+    @echo "🧪 Running demo with MLX model (ensure demo dependencies are synced)..."
+    @uv run --group demo python -m demo.main
 
 # ==============================================================================
 # CLEANUP
